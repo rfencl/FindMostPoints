@@ -43,11 +43,8 @@
       function plotLargestGroup(slopeYinterceptPointMap) {
         
         const [largest, largestKey] = findLargestSetSize(slopeYinterceptPointMap);
-        for (key of slopeYinterceptPointMap.keys()) {
-          if (slopeYinterceptPointMap.get(key).size < largest) {
-            slopeYinterceptPointMap.delete(key);
-          }
-        }
+
+        removeSmallerSets(largest, slopeYinterceptPointMap);
 
         console.log(slopeYinterceptPointMap);
         for (key of slopeYinterceptPointMap.keys()) {
@@ -62,6 +59,14 @@
             drawLine(p1, p2, '#00ff00', 3);
             points.shift();
             //console.log(points);
+          }
+        }
+      }
+
+      function removeSmallerSets(largest, slopeYinterceptPointMap) {
+                for (key of slopeYinterceptPointMap.keys()) {
+          if (slopeYinterceptPointMap.get(key).size < largest) {
+            slopeYinterceptPointMap.delete(key);
           }
         }
       }
