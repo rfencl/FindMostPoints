@@ -66,22 +66,19 @@
         //console.log(JSON.stringify(points)); // Use this to capture a static set of data.
 
         const slopePointMap = calcSlopes(points);
+        // map(key -> set(points))
         const slopeYinterceptPointMap = calcYIntercepts(slopePointMap);
 
         plotLargestGroup(slopeYinterceptPointMap);
       }
 
       function plotLargestGroup(slopeYinterceptPointMap) {
-        // for (key of slopeYinterceptPointMap.keys()) {
-        //   flatten(slopeYinterceptPointMap);
-        // }
-
         let largest = -1;
         let largestKey = '';
         for (key of slopeYinterceptPointMap.keys()) {
           let tlargest = Math.max(
             largest,
-            slopeYinterceptPointMap.get(key).length
+            slopeYinterceptPointMap.get(key).size
           );
           if (tlargest > largest) {
             largestKey = key;
@@ -90,33 +87,26 @@
         }
 
         for (key of slopeYinterceptPointMap.keys()) {
-          if (slopeYinterceptPointMap.get(key).length < largest) {
+          if (slopeYinterceptPointMap.get(key).size < largest) {
             slopeYinterceptPointMap.delete(key);
           }
         }
         for (key of slopeYinterceptPointMap.keys()) {
           console.log(key, slopeYinterceptPointMap.get(key));
-          // need to flatten this to count the actual number of points
-          for (const segment of slopeYinterceptPointMap.get(key)) {
-            const [p1, p2] = transpose(segment[0], segment[1]);
-            drawLine(p1, p2);
+          console.log(slopeYinterceptPointMap.get(key).values());
+          const points = [...slopeYinterceptPointMap.get(key).values()];
+          console.log(points);
+          for (const point of points) {
+            console.log(point);
+            if (points.length > 1) {
+              const [p1, p2] = transpose(points[0], points[1]);
+              drawLine(p1, p2);
+              console.log(points.shift());
+            }
           }
         }
       }
-      // Convert from map(key, [[],[]]) to map(key, [])
-      function flatten(slopeYinterceptPointMap) {
-        for (key of slopeYinterceptPointMap.keys()) {
-          const s = new Set();
-          for (const segment of slopeYinterceptPointMap.get(key)) {
-            const [p1, p2] = segment;
-            s.add(p1, p2);
-            slopeYinterceptPointMap.delete(key);
-            slopeYinterceptPointMap.set(key, ...s.values());
-            //console.log(s.values());
-            console.log(key, slopeYinterceptPointMap.get(key));
-          }
-        }
-      }
+
       //scale the point to the screen
       function transpose(p1, p2) {
         return [
@@ -137,14 +127,18 @@
         for (key of slopePointMap.keys()) {
           const lineSegments = slopePointMap.get(key);
           for (points of lineSegments) {
-            let point = points[0]; // we only need the y-int for one point in the pair.
-            const yIntercept = 0 === key ? point.y : (point.y - point.x) / key;
+            let pointl = points[0]; // we only need the y-int for one
+            //point in the pair.
+            let pointr = points[1];
+            const yIntercept =
+              0 === key ? pointl.y : (pointl.y - pointl.x) / key;
             let newKey = key + '|' + yIntercept;
-            let pointList = slopeYinterceptMap.has(newKey)
+            let pointSet = slopeYinterceptMap.has(newKey)
               ? slopeYinterceptMap.get(newKey)
-              : [];
-            pointList.push(points);
-            slopeYinterceptMap.set(newKey, pointList);
+              : new Set();
+            pointSet.add(pointl);
+            pointSet.add(pointr);
+            slopeYinterceptMap.set(newKey, pointSet);
           }
         }
         return slopeYinterceptMap;
