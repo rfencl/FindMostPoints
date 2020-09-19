@@ -5,6 +5,10 @@
     <title>PlotPoints</title>
   </head>
   <body>
+    <div style="width: 25em; float: left">
+      <h2 id="textOutput"></h2>
+    </div>
+
     <canvas id="DemoCanvas"></canvas>
     <script>
       const canvas = document.getElementById('DemoCanvas');
@@ -23,7 +27,7 @@
         );
         var context = canvas.getContext('2d');
         canvas.height = vh;
-        canvas.width = vh;
+        canvas.width = canvas.height;
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
 
@@ -42,8 +46,11 @@
 
       // draws the lines of largest groups
       function plotLargestGroup(slopeYinterceptPointMap) {
-        const [largest, largestKey] = findLargestSetSize(slopeYinterceptPointMap);
+        const [largest, largestKey] = findLargestSetSize(
+          slopeYinterceptPointMap
+        );
         removeSmallerSets(largest, slopeYinterceptPointMap);
+        displayStats(slopeYinterceptPointMap);
         console.log(slopeYinterceptPointMap);
         for (key of slopeYinterceptPointMap.keys()) {
           const points = [...slopeYinterceptPointMap.get(key)];
@@ -55,9 +62,27 @@
         }
       }
 
+      /*
+      *  Append html elements to the textoutput element.
+      */
+      function displayStats (slopeYinterceptPointMap) {
+         const log = document.getElementById('textOutput');
+         log.textContent = '#lines: ' + slopeYinterceptPointMap.size;
+         log.appendChild(document.createElement("br"));
+         const label = document.createElement("h3");
+         label.textContent = 'slope|y-inter: #points'
+         log.appendChild(label); 
+         for (key of slopeYinterceptPointMap.keys()) {
+           const te = document.createElement("h3");
+           te.textContent+= '    ' + key + ': ' + slopeYinterceptPointMap.get(key).size;
+           te.appendChild(document.createElement("br"));
+           log.appendChild(te);
+         }
+      }
+
       // delete the sets that are smaller than largest
       function removeSmallerSets(largest, slopeYinterceptPointMap) {
-                for (key of slopeYinterceptPointMap.keys()) {
+        for (key of slopeYinterceptPointMap.keys()) {
           if (slopeYinterceptPointMap.get(key).size < largest) {
             slopeYinterceptPointMap.delete(key);
           }
@@ -107,7 +132,7 @@
         }
         return slopeYinterceptMap;
       }
-      
+
       // add the points to the point set and put that set into the map
       function addPointsToMap(newKey, slopeYinterceptMap, points) {
         let pointSet = slopeYinterceptMap.has(newKey)
@@ -135,7 +160,7 @@
       // return a map of points grouped by slope
       function calcSlopes(points) {
         let slopeMap = new Map();
-        const lineSegments = getPointCombinations(points);       
+        const lineSegments = getPointCombinations(points);
 
         for (points of lineSegments) {
           const slope =
@@ -149,7 +174,7 @@
         }
         return slopeMap;
       }
-      
+
       // return array of points
       function getPointCombinations(points) {
         const lineSegments = [];
