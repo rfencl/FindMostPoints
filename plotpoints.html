@@ -165,11 +165,8 @@
       function generatePoints(numPoints) {
         var points = [];
         for (i = 0; i < numPoints; ++i) {
-          //  const xval = (getSign() * Math.random() * numScaleMarks) / 2;
-          //  const yval = (getSign() * Math.random() * numScaleMarks) / 2;
           const xval = getSign() * getRandomInt(numScaleMarks / 2);
           const yval = getSign() * getRandomInt(numScaleMarks / 2);
-          //console.log(xval, yval);
           points.push({ x: xval, y: yval });
         }
         return points;
@@ -211,7 +208,7 @@
         drawHashes();
       }
 
-      // Drawas the hashmarks on the axis
+      // Draws the hashmarks on the axis
       function drawHashes() {
         const hashsize = 3;
         for (i = 0; i < numScaleMarks; ++i) {
