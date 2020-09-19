@@ -40,12 +40,10 @@
         plotLargestGroup(slopeYinterceptPointMap);
       }
 
+      // draws the lines of largest groups
       function plotLargestGroup(slopeYinterceptPointMap) {
-        
         const [largest, largestKey] = findLargestSetSize(slopeYinterceptPointMap);
-
         removeSmallerSets(largest, slopeYinterceptPointMap);
-
         console.log(slopeYinterceptPointMap);
         for (key of slopeYinterceptPointMap.keys()) {
           const points = [...slopeYinterceptPointMap.get(key)];
@@ -109,7 +107,8 @@
         }
         return slopeYinterceptMap;
       }
-
+      
+      // add the points to the point set and put that set into the map
       function addPointsToMap(newKey, slopeYinterceptMap, points) {
         let pointSet = slopeYinterceptMap.has(newKey)
           ? slopeYinterceptMap.get(newKey)
@@ -132,15 +131,12 @@
           pointSet.add(point);
         }
       }
+
       // return a map of points grouped by slope
       function calcSlopes(points) {
         let slopeMap = new Map();
-        const lineSegments = [];
-        for (i = 0; i < points.length; ++i) {
-          for (j = i + 1; j < points.length; ++j) {
-            lineSegments.push([points[i], points[j]]);
-          }
-        }
+        const lineSegments = getPointCombinations(points);       
+
         for (points of lineSegments) {
           const slope =
             (points[1].y - points[0].y) / (points[1].x - points[0].x);
@@ -151,6 +147,17 @@
           }
         }
         return slopeMap;
+      }
+      
+      // return array of points
+      function getPointCombinations(points) {
+        const lineSegments = [];
+        for (i = 0; i < points.length; ++i) {
+          for (j = i + 1; j < points.length; ++j) {
+            lineSegments.push([points[i], points[j]]);
+          }
+        }
+        return lineSegments;
       }
 
       // generate a set of points
