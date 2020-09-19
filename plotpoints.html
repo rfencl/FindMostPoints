@@ -30,40 +30,40 @@
 
         let points = generatePoints(30);
         // let points = [
-        //   { x: 14, y: 13 },
-        //   { x: -2, y: -16 },
-        //   { x: 0, y: -8 },
-        //   { x: 8, y: -26 },
-        //   { x: -20, y: 16 },
-        //   { x: 0, y: -7 },
-        //   { x: -12, y: -21 },
-        //   { x: 24, y: 10 },
-        //   { x: -26, y: -11 },
-        //   { x: 20, y: 6 },
-        //   { x: 7, y: -12 },
-        //   { x: 25, y: 22 },
-        //   { x: -29, y: -6 },
-        //   { x: -11, y: 23 },
-        //   { x: -20, y: -12 },
-        //   { x: -3, y: -32 },
-        //   { x: 30, y: -17 },
-        //   { x: 28, y: -4 },
-        //   { x: 9, y: 11 },
-        //   { x: -10, y: 32 },
-        //   { x: 28, y: 30 },
-        //   { x: 21, y: 30 },
-        //   { x: 29, y: 31 },
-        //   { x: 16, y: 7 },
-        //   { x: -7, y: -30 },
-        //   { x: 28, y: 8 },
-        //   { x: 12, y: 20 },
-        //   { x: 13, y: -31 },
-        //   { x: -32, y: -6 },
-        //   { x: -32, y: 32 },
+        //   { x: 16, y: 1 },
+        //   { x: 21, y: 27 },
+        //   { x: -2, y: 27 },
+        //   { x: -20, y: -22 },
+        //   { x: -32, y: 14 },
+        //   { x: -22, y: 2 },
+        //   { x: -28, y: 8 },
+        //   { x: 1, y: -18 },
+        //   { x: -24, y: 2 },
+        //   { x: -10, y: 19 },
+        //   { x: 8, y: -4 },
+        //   { x: -8, y: -11 },
+        //   { x: 28, y: -24 },
+        //   { x: 29, y: 3 },
+        //   { x: 26, y: 22 },
+        //   { x: -29, y: 23 },
+        //   { x: 30, y: 27 },
+        //   { x: -19, y: 8 },
+        //   { x: -29, y: 12 },
+        //   { x: -31, y: 9 },
+        //   { x: 27, y: -16 },
+        //   { x: -21, y: 19 },
+        //   { x: -27, y: -8 },
+        //   { x: -1, y: -14 },
+        //   { x: 6, y: 20 },
+        //   { x: -4, y: 27 },
+        //   { x: 11, y: 16 },
+        //   { x: -27, y: 22 },
+        //   { x: 29, y: -7 },
+        //   { x: 19, y: -12 },
         // ];
 
         plotPoints(points);
-        //console.log(JSON.stringify(points)); // Use this to capture a static set of data.
+        // console.log(JSON.stringify(points)); // Use this to capture a static set of data.
 
         const slopePointMap = calcSlopes(points);
         // map(key -> set(points))
@@ -91,17 +91,20 @@
             slopeYinterceptPointMap.delete(key);
           }
         }
+        console.log(slopeYinterceptPointMap);
         for (key of slopeYinterceptPointMap.keys()) {
           console.log(key, slopeYinterceptPointMap.get(key));
-          console.log(slopeYinterceptPointMap.get(key).values());
+          // console.log(slopeYinterceptPointMap.get(key).values());
           const points = [...slopeYinterceptPointMap.get(key).values()];
-          console.log(points);
+          // console.log(points);
           for (const point of points) {
-            console.log(point);
+            // console.log(point);
             if (points.length > 1) {
+              console.log('drawing line from', points[0], points[1]);
               const [p1, p2] = transpose(points[0], points[1]);
               drawLine(p1, p2);
-              console.log(points.shift());
+              points.shift();
+              console.log(points);
             }
           }
         }
@@ -124,15 +127,12 @@
       // Return a map of points grouped by slope-y-intercept
       function calcYIntercepts(slopePointMap) {
         let slopeYinterceptMap = new Map();
-        for (key of slopePointMap.keys()) {
-          const lineSegments = slopePointMap.get(key);
+        for (slope of slopePointMap.keys()) {
+          const lineSegments = slopePointMap.get(slope);
           for (points of lineSegments) {
-            let pointl = points[0]; // we only need the y-int for one
-            //point in the pair.
+            let pointl = points[0]; 
             let pointr = points[1];
-            const yIntercept =
-              0 === key ? pointl.y : (pointl.y - pointl.x) / key;
-            let newKey = key + '|' + yIntercept;
+            let newKey = slope + '|' + (-1 * pointr.x * slope + pointr.y);
             let pointSet = slopeYinterceptMap.has(newKey)
               ? slopeYinterceptMap.get(newKey)
               : new Set();
@@ -144,7 +144,7 @@
         return slopeYinterceptMap;
       }
 
-      // return a map of points grouped by slope
+         // return a map of points grouped by slope
       function calcSlopes(points) {
         let slopeMap = new Map();
         const lineSegments = [];
