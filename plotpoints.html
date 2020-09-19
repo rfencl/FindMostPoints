@@ -48,21 +48,16 @@
 
         console.log(slopeYinterceptPointMap);
         for (key of slopeYinterceptPointMap.keys()) {
-          //console.log(key, slopeYinterceptPointMap.get(key));
-          // console.log(slopeYinterceptPointMap.get(key).values());
           const points = [...slopeYinterceptPointMap.get(key)];
-          // console.log(points);
           while (points.length > 1) {
-            // console.log(point);
-            console.log('drawing line from', points[0], points[1]);
             const [p1, p2] = transpose(points[0], points[1]);
             drawLine(p1, p2, '#00ff00', 3);
             points.shift();
-            //console.log(points);
           }
         }
       }
 
+      // delete the sets that are smaller than largest
       function removeSmallerSets(largest, slopeYinterceptPointMap) {
                 for (key of slopeYinterceptPointMap.keys()) {
           if (slopeYinterceptPointMap.get(key).size < largest) {
@@ -71,6 +66,7 @@
         }
       }
 
+      // returns the largest key and size of set
       function findLargestSetSize(slopeYinterceptPointMap) {
         let largest = -1;
         let largestKey = '';
