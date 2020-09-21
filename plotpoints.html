@@ -46,7 +46,7 @@
 
       // draws the lines of largest groups
       function plotLargestGroup(slopeYinterceptPointMap) {
-        const [largest, largestKey] = findLargestSetSize(
+        const largest = findLargestSetSize(
           slopeYinterceptPointMap
         );
         removeSmallerSets(largest, slopeYinterceptPointMap);
@@ -63,21 +63,22 @@
       }
 
       /*
-      *  Append html elements to the textoutput element.
-      */
-      function displayStats (slopeYinterceptPointMap) {
-         const log = document.getElementById('textOutput');
-         log.textContent = '#lines: ' + slopeYinterceptPointMap.size;
-         log.appendChild(document.createElement("br"));
-         const label = document.createElement("h3");
-         label.textContent = 'slope|y-inter: #points'
-         log.appendChild(label); 
-         for (key of slopeYinterceptPointMap.keys()) {
-           const te = document.createElement("h3");
-           te.textContent+= '    ' + key + ': ' + slopeYinterceptPointMap.get(key).size;
-           te.appendChild(document.createElement("br"));
-           log.appendChild(te);
-         }
+       *  Append html elements to the textoutput element.
+       */
+      function displayStats(slopeYinterceptPointMap) {
+        const log = document.getElementById('textOutput');
+        log.textContent = '#lines: ' + slopeYinterceptPointMap.size;
+        log.appendChild(document.createElement('br'));
+        const label = document.createElement('h3');
+        label.textContent = 'slope|y-inter: #points';
+        log.appendChild(label);
+        for (key of slopeYinterceptPointMap.keys()) {
+          const te = document.createElement('h3');
+          te.textContent +=
+            '    ' + key + ': ' + slopeYinterceptPointMap.get(key).size;
+          te.appendChild(document.createElement('br'));
+          log.appendChild(te);
+        }
       }
 
       // delete the sets that are smaller than largest
@@ -92,18 +93,13 @@
       // returns the largest key and size of set
       function findLargestSetSize(slopeYinterceptPointMap) {
         let largest = -1;
-        let largestKey = '';
         for (key of slopeYinterceptPointMap.keys()) {
-          let tlargest = Math.max(
+          largest = Math.max(
             largest,
             slopeYinterceptPointMap.get(key).size
           );
-          if (tlargest > largest) {
-            largestKey = key;
-            largest = tlargest;
-          }
         }
-        return [largest, largestKey];
+        return largest;
       }
 
       //scale the point to the screen
