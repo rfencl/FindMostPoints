@@ -37,8 +37,10 @@
         plotPoints(points);
         console.log(JSON.stringify(points)); // Use this to capture a static set of data.
 
+        // map(slope -> set(points))
         const slopePointMap = calcSlopes(points);
-        // map(key -> set(points))
+
+        // map(slope|yIntercept -> set(points))
         const slopeYinterceptPointMap = calcYIntercepts(slopePointMap);
 
         plotLargestGroup(slopeYinterceptPointMap);
@@ -46,20 +48,53 @@
 
       // draws the lines of largest groups
       function plotLargestGroup(slopeYinterceptPointMap) {
-        const largest = findLargestSetSize(
-          slopeYinterceptPointMap
-        );
+        const largest = findLargestSetSize(slopeYinterceptPointMap);
         removeSmallerSets(largest, slopeYinterceptPointMap);
         displayStats(slopeYinterceptPointMap);
         console.log(slopeYinterceptPointMap);
+        let lines = getOrderedLines(slopeYinterceptPointMap);
+        console.log(lines);
+        let count = 0;
+        for (line of lines) {
+          const [p1, p2] = transpose(line.p1, line.p2);
+          drawLine(p1, p2, count===0?'#00ff00':'#0000ff', 3);
+          count++;
+        }
+      }
+
+      // Returns the array of lines with the first one being the longest
+      function getOrderedLines(slopeYinterceptPointMap) {
+        const lines = [];
         for (key of slopeYinterceptPointMap.keys()) {
           const points = [...slopeYinterceptPointMap.get(key)];
-          while (points.length > 1) {
-            const [p1, p2] = transpose(points[0], points[1]);
-            drawLine(p1, p2, '#00ff00', 3);
-            points.shift();
+          let line = findEndpoints(points);
+          console.log(line);
+          lines.push(line);
+        }
+        return lines.sort((l, r) => r.length - l.length);
+      }
+
+      // given array of points find the two endpoints.
+      function findEndpoints(points) {
+        let length = -1;
+        let p1 = {};
+        let p2 = {};
+        for (i = 0; i < points.length; ++i) {
+          for (j = i + 1; j < points.length; ++j) {
+            let t = lineLength(points[i], points[j]);
+            if (t > length) {
+              p1 = points[i];
+              p2 = points[j];
+              length = t;
+            }
           }
         }
+        return { p1, p2, length };
+      }
+
+      // return the length of the line segment between two points
+      function lineLength(p1, p2) {
+        return Math.sqrt(Math.pow(p2.y - p1.y, 2) + Math.pow(p2.x - p1.x, 2));
       }
 
       /*
@@ -94,10 +129,7 @@
       function findLargestSetSize(slopeYinterceptPointMap) {
         let largest = -1;
         for (key of slopeYinterceptPointMap.keys()) {
-          largest = Math.max(
-            largest,
-            slopeYinterceptPointMap.get(key).size
-          );
+          largest = Math.max(largest, slopeYinterceptPointMap.get(key).size);
         }
         return largest;
       }
