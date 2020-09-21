@@ -106,10 +106,10 @@
        */
       function displayStats(lines) {
         const log = document.getElementById('textOutput');
-        log.textContent = '#lines: ' + lines.length;
+        log.textContent = `${lines.length} lines with ${lines[0].numPoints} points`;
         log.appendChild(document.createElement('br'));
         const label = document.createElement('h3');
-        label.textContent = 'slope|y-inter|length|#points';
+        label.textContent = 'slope|y-inter|length';
         log.appendChild(label);
         let count = 0;
         for (line of lines) {
@@ -122,9 +122,7 @@
             '|' +
             Number(line.yinter).toFixed(2) +
             '|' +
-            line.length.toFixed(2) +
-            '|' +
-            line.numPoints;
+            line.length.toFixed(2);
           te.appendChild(document.createElement('br'));
           log.appendChild(te);
           count++;
