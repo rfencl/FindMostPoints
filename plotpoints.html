@@ -46,18 +46,18 @@
         plotLargestGroup(slopeYinterceptPointMap);
       }
 
-      // draws the lines of largest groups
+      // draws the lines of group with the most points
       function plotLargestGroup(slopeYinterceptPointMap) {
         const largest = findLargestSetSize(slopeYinterceptPointMap);
         removeSmallerSets(largest, slopeYinterceptPointMap);
-        displayStats(slopeYinterceptPointMap);
         console.log(slopeYinterceptPointMap);
         let lines = getOrderedLines(slopeYinterceptPointMap);
-        console.log(lines);
+        displayStats(lines);
+        // console.log(lines);
         let count = 0;
         for (line of lines) {
           const [p1, p2] = transpose(line.p1, line.p2);
-          drawLine(p1, p2, count===0?'#00ff00':'#0000ff', 3);
+          drawLine(p1, p2, count === 0 ? 'green' : 'blue', 3);
           count++;
         }
       }
@@ -68,6 +68,10 @@
         for (key of slopeYinterceptPointMap.keys()) {
           const points = [...slopeYinterceptPointMap.get(key)];
           let line = findEndpoints(points);
+          const ke = key.split('|');
+          line.slope = ke[0];
+          line.yinter = ke[1];
+          line.numPoints = points.length;
           console.log(line);
           lines.push(line);
         }
@@ -100,19 +104,30 @@
       /*
        *  Append html elements to the textoutput element.
        */
-      function displayStats(slopeYinterceptPointMap) {
+      function displayStats(lines) {
         const log = document.getElementById('textOutput');
-        log.textContent = '#lines: ' + slopeYinterceptPointMap.size;
+        log.textContent = '#lines: ' + lines.length;
         log.appendChild(document.createElement('br'));
         const label = document.createElement('h3');
-        label.textContent = 'slope|y-inter: #points';
+        label.textContent = 'slope|y-inter|length|#points';
         log.appendChild(label);
-        for (key of slopeYinterceptPointMap.keys()) {
-          const te = document.createElement('h3');
+        let count = 0;
+        for (line of lines) {
+          const te = document.createElement('p');
+          te.style.fontSize = '.8em';
+          te.style.color = count === 0 ? 'green' : 'blue';
           te.textContent +=
-            '    ' + key + ': ' + slopeYinterceptPointMap.get(key).size;
+            '    ' +
+            Number(line.slope).toFixed(2) +
+            '|' +
+            Number(line.yinter).toFixed(2) +
+            '|' +
+            line.length.toFixed(2) +
+            '|' +
+            line.numPoints;
           te.appendChild(document.createElement('br'));
           log.appendChild(te);
+          count++;
         }
       }
 
@@ -216,7 +231,7 @@
 
       // generate a set of points
       function generatePoints(numPoints) {
-        var points = [];
+        let points = [];
         for (i = 0; i < numPoints; ++i) {
           const xval = getSign() * getRandomInt(numScaleMarks / 2);
           const yval = getSign() * getRandomInt(numScaleMarks / 2);
